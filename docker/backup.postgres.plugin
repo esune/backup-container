@@ -230,6 +230,8 @@ function onVerifyBackup(){
     _password=$(getPassword ${_databaseSpec})
 
     debugMsg "backup.postgres.plugin - onVerifyBackup"
+
+    echoGreen "Verifying backup for schema ${_schema} on ${_hostname}:${_port}/${_database} ..."
     tables=$(psql -h "${_hostname}" ${_portArg} -d "${_database}" -t -c "SELECT table_name FROM information_schema.tables WHERE table_schema='${_schema}' AND table_type='BASE TABLE';")
     rtnCd=${?}
 
