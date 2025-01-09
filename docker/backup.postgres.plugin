@@ -34,10 +34,8 @@ function onBackupDatabase(){
     fi
     echoGreen "Backing up ${_schemaLog}'${_hostname}${_port:+:${_port}}${_database:+/${_database}}' to '${_backupFile}' ..."
 
-    echoYellow "pg_dump -Fp -h ${_hostname} ${_portArg} -U ${_username} ${_schemaParam} ${_database} > ${BACKUP_DIR}backup.sql"
-
     export PGPASSWORD=${_password}
-    pg_dump -Fp -h "${_hostname}" ${_portArg} -U "${_username}" "${_schemaParam}""${_database}" > "${BACKUP_DIR}backup.sql"
+    pg_dump -Fp -h "${_hostname}" ${_portArg} -U "${_username}" "${_database}" > "${BACKUP_DIR}backup.sql"
     pg_dumpall -h "${_hostname}" ${_portArg} -U "${_username}" --roles-only --no-role-passwords > "${BACKUP_DIR}roles.sql"
     cat "${BACKUP_DIR}roles.sql" "${BACKUP_DIR}backup.sql" | gzip > ${_backupFile}
     rm "${BACKUP_DIR}roles.sql" && rm "${BACKUP_DIR}backup.sql"
