@@ -20,7 +20,7 @@ function getSchema(){
       _schema=$(echo ${_databaseSpec} | sed -n  's~^.*backupSchema=\([^&]*\).*~\1~p')
     elif [ "${_backupMode}" == 'verify' ]; then
       _verifySchema=$(echo ${_databaseSpec} | sed -n  's~^.*verifySchema=\([^&]*\).*~\1~p')
-      _schema="${!_verifySchema:-$TABLE_SCHEMA}"      
+      _schema="${_verifySchema:-$TABLE_SCHEMA}"      
     fi
     echo "${_schema}"
   )
