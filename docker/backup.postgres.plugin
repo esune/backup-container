@@ -110,11 +110,11 @@ EOF
     fi
 
     # Grant User Access
-    if (( ${_rtnCd} == 0 )); then
-      psql -h "${_hostname}" ${_portArg} -ac "GRANT ALL ON DATABASE \"${_database}\" TO \"${_username}\";"
-      _rtnCd=${?}
-      echo
-    fi
+    # if (( ${_rtnCd} == 0 )); then
+    #   psql -h "${_hostname}" ${_portArg} -ac "GRANT ALL ON DATABASE \"${_database}\" TO \"${_username}\";"
+    #   _rtnCd=${?}
+    #   echo
+    # fi
 
     # Restore
     echoYellow "psql ${_stopOnErrors} -x -h ${_hostname} ${_portArg} -d ${_database}"
@@ -147,8 +147,10 @@ function onStartServer(){
 
     _databaseSpec=${1}
 
-    # Start a local PostgreSql instance, without specifying custom users or databases
-    POSTGRESQL_ADMIN_PASSWORD=super-secret \
+    # Start a local PostgreSql instance
+    POSTGRESQL_DATABASE=$(getDatabaseName "${_databaseSpec}") \
+    POSTGRESQL_USER=$(getUsername "${_databaseSpec}") \
+    POSTGRESQL_PASSWORD=$(getPassword "${_databaseSpec}") \
     run-postgresql >/dev/null 2>&1 &
   )
 }
