@@ -110,11 +110,11 @@ EOF
     fi
 
     # Grant User Access
-    # if (( ${_rtnCd} == 0 )); then
-    #   psql -h "${_hostname}" ${_portArg} -ac "GRANT ALL ON DATABASE \"${_database}\" TO \"${_username}\";"
-    #   _rtnCd=${?}
-    #   echo
-    # fi
+    if (( ${_rtnCd} == 0 )); then
+      psql -h "${_hostname}" ${_portArg} -ac "GRANT ALL ON DATABASE \"${_database}\" TO \"${_username}\";"
+      _rtnCd=${?}
+      echo
+    fi
 
     # Restore
     echoYellow "psql ${_stopOnErrors} -x -h ${_hostname} ${_portArg} -d ${_database}"
