@@ -37,6 +37,12 @@ function onBackupDatabase(){
     export PGPASSWORD=${_password}
     pg_dump -Fp -h "${_hostname}" ${_portArg} -U "${_username}" "${_database}" > "${BACKUP_DIR}backup.sql"
     pg_dumpall -h "${_hostname}" ${_portArg} -U "${_username}" --roles-only --no-role-passwords > "${BACKUP_DIR}roles.sql"
+
+    # post-process roles.sql to remove the "CREATE ROLE" statements for the default roles
+    _sed_expr=
+    sed -i '/^CREATE ROLE "$_username";/d; /^CREATE ROLE postgres;/d' "${BACKUP_DIR}roles.sql"
+
+    # create a single gzip file with both the database and roles
     cat "${BACKUP_DIR}backup.sql" "${BACKUP_DIR}roles.sql" | gzip > ${_backupFile}
     rm "${BACKUP_DIR}roles.sql" && rm "${BACKUP_DIR}backup.sql"
     return ${PIPESTATUS[0]}
@@ -141,10 +147,8 @@ function onStartServer(){
 
     _databaseSpec=${1}
 
-    # Start a local PostgreSql instance
-    # POSTGRESQL_DATABASE=$(getDatabaseName "${_databaseSpec}") \
-    # POSTGRESQL_USER=$(getUsername "${_databaseSpec}") \
-    # POSTGRESQL_PASSWORD=$(getPassword "${_databaseSpec}") \
+    # Start a local PostgreSql instance, without specifying custom users or databases
+    POSTGRESQL_ADMIN_PASSWORD=super-secret \
     run-postgresql >/dev/null 2>&1 &
   )
 }
